@@ -1,126 +1,98 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Магічна куля</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background-color: #1a1a2e;
-            font-family: Arial, sans-serif;
-        }
-        .magic-ball {
-            position: relative;
-            text-align: center;
-        }
-        .ball {
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, #2a2a4e, #4b0082);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-        }
-        .answer {
-            color: #fff;
-            font-size: 24px;
-            text-shadow: 0 0 10px #00ffcc;
-        }
-        .input-group {
-            margin-top: 20px;
-        }
-        input[type="text"] {
-            padding: 10px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            outline: none;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            background-color: #00ffcc;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #00cc99;
-        }
-        @media (max-width: 400px) {
-            .ball {
-                width: 200px;
-                height: 200px;
-            }
-            .answer {
-                font-size: 18px;
-            }
-            input[type="text"], button {
-                font-size: 14px;
-                padding: 8px;
-            }
-        }
-    </style>
-</head>
-<body></body>
-<script>
-    const answers = [
-        "Так",
-        "Ні",
-        "Можливо",
-        "Спробуй ще раз",
-        "Не думаю",
-        "Без сумніву",
-    ];
-
-    function createMagicBall() {
-        const container = document.createElement('div');
-        container.className = 'magic-ball';
-
-        const ball = document.createElement('div');
-        ball.className = 'ball';
-        const answer = document.createElement('div');
-        answer.className = 'answer';
-        answer.textContent = 'Запитай мене';
-        ball.appendChild(answer);
-
-        const inputGroup = document.createElement('div');
-        inputGroup.className = 'input-group';
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.placeholder = 'Введи питання...';
-        const button = document.createElement('button');
-        button.textContent = 'Запитати';
-        button.addEventListener('click', () => {
-            if (input.value.trim() === '') {
-                alert('Будь ласка, введіть питання!');
-                return;
-            }
-            answer.textContent = answers[Math.floor(Math.random() * answers.length)];
-            input.value = '';
-        });
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && input.value.trim() !== '') {
-                answer.textContent = answers[Math.floor(Math.random() * answers.length)];
-                input.value = '';
-            }
-        });
-        inputGroup.appendChild(input);
-        inputGroup.appendChild(button);
-
-        container.appendChild(ball);
-        container.appendChild(inputGroup);
-        document.body.appendChild(container);
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>В кого більше число</title>
+  <style>
+    body {
+      background-color: #101820;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
     }
+    h1 { 
+    margin-bottom: 20px; 
+    }
+    .container {
+      background: #1b2838;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      width: 300px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      background: #3b82f6;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover { 
+    background: #2563eb; 
+    }
+  </style>
+</head>
+<body>
+  <h1>Гра: В кого більше число</h1>
+  <div class="container">
+    <p id="name"></p>
+    <p><span id="userNum">—</span> vs <span id="compNum">—</span></p>
+    <p id="result">Натисни "Раунд", щоб почати!</p>
+    <p id="score">Рахунок: 0 : 0</p>
+    <button id="roundBtn">Раунд</button>
+    <button id="newBtn">Нова гра</button>
+  </div>
 
-    window.onload = createMagicBall;
-</script>
+  <script>
+    let userName = prompt("Введіть ваше ім'я:");
+    if (!userName) userName = "Гравець";
+    document.getElementById("name").textContent = "Гравець: " + userName;
+
+    let userScore = 0, compScore = 0;
+
+    document.getElementById("roundBtn").addEventListener("click", function() {
+      let userNum = Math.floor(Math.random() * 10);
+      let compNum = Math.floor(Math.random() * 10);
+      document.getElementById("userNum").textContent = userNum;
+      document.getElementById("compNum").textContent = compNum;
+
+      if (userNum > compNum) {
+        userScore++;
+        document.getElementById("result").textContent = "Очко " + userName + "!";
+      } else if (userNum < compNum) {
+        compScore++;
+        document.getElementById("result").textContent = "Очко комп’ютера!";
+      } else {
+        document.getElementById("result").textContent = "Нічия!";
+      }
+
+      document.getElementById("score").textContent = "Рахунок: " + userScore + " : " + compScore;
+
+      if (userScore === 3) {
+        document.getElementById("result").textContent = "Перемога, " + userName + "!";
+        document.getElementById("roundBtn").disabled = true;
+      } else if (compScore === 3) {
+        document.getElementById("result").textContent = "Переміг комп’ютер!";
+        document.getElementById("roundBtn").disabled = true;
+      }
+    });
+
+    document.getElementById("newBtn").addEventListener("click", function() {
+      userScore = 0;
+      compScore = 0;
+      document.getElementById("score").textContent = "Рахунок: 0 : 0";
+      document.getElementById("userNum").textContent = "—";
+      document.getElementById("compNum").textContent = "—";
+      document.getElementById("result").textContent = "Натисни 'Раунд', щоб почати!";
+      document.getElementById("roundBtn").disabled = false;
+    });
+  </script>
+</body>
 </html>
