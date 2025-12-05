@@ -2,97 +2,183 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>В кого більше число</title>
+  <title>Гра "21" (простий варіант)</title>
   <style>
     body {
-      background-color: #101820;
-      color: #fff;
       font-family: Arial, sans-serif;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
-    h1 { 
-    margin-bottom: 20px; 
-    }
-    .container {
-      background: #1b2838;
-      padding: 20px;
-      border-radius: 10px;
+      background-color: #20232a;
+      color: white;
       text-align: center;
-      width: 300px;
+      padding: 20px;
+    }
+    #game {
+      margin: 20px auto;
+      padding: 15px;
+      border: 2px solid #61dafb;
+      border-radius: 10px;
+      max-width: 400px;
+    }
+    .block {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 8px;
+      background-color: #282c34;
     }
     button {
-      padding: 10px 20px;
       margin: 5px;
-      background: #3b82f6;
+      padding: 8px 16px;
       border: none;
-      border-radius: 5px;
-      color: white;
+      border-radius: 6px;
       cursor: pointer;
+      font-size: 14px;
+      background-color: #61dafb;
     }
-    button:hover { 
-    background: #2563eb; 
+    button:disabled {
+      background-color: gray;
+      cursor: default;
     }
   </style>
 </head>
 <body>
-  <h1>Гра: В кого більше число</h1>
-  <div class="container">
-    <p id="name"></p>
-    <p><span id="userNum">—</span> vs <span id="compNum">—</span></p>
-    <p id="result">Натисни "Раунд", щоб почати!</p>
-    <p id="score">Рахунок: 0 : 0</p>
-    <button id="roundBtn">Раунд</button>
-    <button id="newBtn">Нова гра</button>
+
+  <h1>Гра "21"</h1>
+  <p id="helloText"></p>
+
+  <div id="game">
+    <div class="block" id="userBlock">
+      <h3 id="userName">Гравець</h3>
+      <p>Карти: <span id="userCards">—</span></p>
+      <p>Сума очок: <span id="userScore">0</span></p>
+    </div>
+
+    <div class="block" id="compBlock">
+      <h3>Комп'ютер</h3>
+      <p>Карти: <span id="compCards">—</span></p>
+      <p>Сума очок: <span id="compScore">0</span></p>
+    </div>
+
+    <p>Раунд: <span id="roundNum">0</span> / 3</p>
+
+    <button id="nextRoundBtn">Наступний раунд</button>
+    <button id="restartBtn" disabled>Почати заново</button>
+
+    <p id="resultText"></p>
   </div>
 
   <script>
-    let userName = prompt("Введіть ваше ім'я:");
-    if (!userName) userName = "Гравець";
-    document.getElementById("name").textContent = "Гравець: " + userName;
+    const cardNames = ["6", "7", "8", "9", "10", "Валет", "Дама", "Король", "Туз"];
+    const cardValues = [6, 7, 8, 9, 10, 2, 3, 4, 11];
 
-    let userScore = 0, compScore = 0;
+    const helloText = document.getElementById("helloText");
+    const userNameElem = document.getElementById("userName");
+    const userCardsElem = document.getElementById("userCards");
+    const userScoreElem = document.getElementById("userScore");
+    const compCardsElem = document.getElementById("compCards");
+    const compScoreElem = document.getElementById("compScore");
+    const roundNumElem = document.getElementById("roundNum");
+    const resultText = document.getElementById("resultText");
+    const nextRoundBtn = document.getElementById("nextRoundBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const userBlock = document.getElementById("userBlock");
+    const compBlock = document.getElementById("compBlock");
 
-    document.getElementById("roundBtn").addEventListener("click", function() {
-      let userNum = Math.floor(Math.random() * 10);
-      let compNum = Math.floor(Math.random() * 10);
-      document.getElementById("userNum").textContent = userNum;
-      document.getElementById("compNum").textContent = compNum;
+    let userScore = 0;
+    let compScore = 0;
+    let userCardsText = "";
+    let compCardsText = "";
+    let round = 0;
+    const maxRounds = 3;
 
-      if (userNum > compNum) {
-        userScore++;
-        document.getElementById("result").textContent = "Очко " + userName + "!";
-      } else if (userNum < compNum) {
-        compScore++;
-        document.getElementById("result").textContent = "Очко комп’ютера!";
+    function askName() {
+      let name = prompt("Введіть ваше ім'я:", "Гравець");
+      if (!name || name.trim() === "") {
+        name = "Гравець";
+      }
+      userNameElem.textContent = name;
+      helloText.textContent = "Вітаю, " + name + "! Зіграємо проти комп'ютера.";
+    }
+
+    function getRandomCard() {
+      const index = Math.floor(Math.random() * cardNames.length);
+      return {
+        name: cardNames[index],
+        value: cardValues[index]
+      };
+    }
+
+    function playRound() {
+      if (round >= maxRounds) return;
+
+      round++;
+      roundNumElem.textContent = round;
+
+      const userCard = getRandomCard();
+      const compCard = getRandomCard();
+
+      userScore += userCard.value;
+      compScore += compCard.value;
+
+      userCardsText = userCardsText === "" ? userCard.name : userCardsText + ", " + userCard.name;
+      compCardsText = compCardsText === "" ? compCard.name : compCardsText + ", " + compCard.name;
+
+      userCardsElem.textContent = userCardsText;
+      compCardsElem.textContent = compCardsText;
+      userScoreElem.textContent = userScore;
+      compScoreElem.textContent = compScore;
+
+      userBlock.style.backgroundColor = "#2e7d32";
+      compBlock.style.backgroundColor = "#6a1b9a";
+
+      if (round === maxRounds) finishGame();
+    }
+
+    function finishGame() {
+      nextRoundBtn.disabled = true;
+      restartBtn.disabled = false;
+
+      userBlock.style.backgroundColor = "#282c34";
+      compBlock.style.backgroundColor = "#282c34";
+
+      if (userScore > compScore) {
+        resultText.textContent = "Ви перемогли! (" + userScore + " проти " + compScore + ")";
+        userBlock.style.backgroundColor = "green";
+        compBlock.style.backgroundColor = "red";
+      } else if (userScore < compScore) {
+        resultText.textContent = "Комп'ютер переміг. (" + compScore + " проти " + userScore + ")";
+        userBlock.style.backgroundColor = "red";
+        compBlock.style.backgroundColor = "green";
       } else {
-        document.getElementById("result").textContent = "Нічия!";
+        resultText.textContent = "Нічия! Обидва набрали " + userScore + " очок.";
+        userBlock.style.backgroundColor = "orange";
+        compBlock.style.backgroundColor = "orange";
       }
+    }
 
-      document.getElementById("score").textContent = "Рахунок: " + userScore + " : " + compScore;
-
-      if (userScore === 3) {
-        document.getElementById("result").textContent = "Перемога, " + userName + "!";
-        document.getElementById("roundBtn").disabled = true;
-      } else if (compScore === 3) {
-        document.getElementById("result").textContent = "Переміг комп’ютер!";
-        document.getElementById("roundBtn").disabled = true;
-      }
-    });
-
-    document.getElementById("newBtn").addEventListener("click", function() {
+    function restartGame() {
       userScore = 0;
       compScore = 0;
-      document.getElementById("score").textContent = "Рахунок: 0 : 0";
-      document.getElementById("userNum").textContent = "—";
-      document.getElementById("compNum").textContent = "—";
-      document.getElementById("result").textContent = "Натисни 'Раунд', щоб почати!";
-      document.getElementById("roundBtn").disabled = false;
-    });
+      userCardsText = "";
+      compCardsText = "";
+      round = 0;
+
+      userScoreElem.textContent = "0";
+      compScoreElem.textContent = "0";
+      userCardsElem.textContent = "—";
+      compCardsElem.textContent = "—";
+      roundNumElem.textContent = "0";
+      resultText.textContent = "";
+
+      userBlock.style.backgroundColor = "#282c34";
+      compBlock.style.backgroundColor = "#282c34";
+
+      nextRoundBtn.disabled = false;
+      restartBtn.disabled = true;
+    }
+
+    nextRoundBtn.onclick = playRound;
+    restartBtn.onclick = restartGame;
+
+    askName();
   </script>
 </body>
 </html>
