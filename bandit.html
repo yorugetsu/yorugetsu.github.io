@@ -16,8 +16,8 @@ body {
     min-height: 100vh;
 }
 .wrapper {
-    width: 95%;
-    max-width: 480px;
+    width: 90%;
+    max-width: 420px;
     padding: 16px;
     box-sizing: border-box;
     background: #2a3150;
@@ -74,7 +74,7 @@ h1 {
     align-items: center;
     gap: 6px;
 }
-#spinBtn, #restartBtn {
+button {
     padding: 8px 24px;
     border-radius: 20px;
     border: none;
@@ -83,13 +83,12 @@ h1 {
     font-size: 14px;
     cursor: pointer;
 }
-#spinBtn:disabled {
-    background: #777;
-    cursor: not-allowed;
-}
 #restartBtn {
     background: #4caf50;
-    display: none;
+}
+button:disabled {
+    background: #777;
+    cursor: not-allowed;
 }
 #info {
     font-size: 14px;
@@ -139,37 +138,39 @@ playerName = playerName.trim()
 if (playerName === "") playerName = "Гравець"
 document.getElementById("greeting").textContent = "Вітаємо, " + playerName + "!"
 
-const fruits = ["apple.png","pear.png","lemon.png","cherry.png","apricot.png"]
+let fruits = ["apple.png","pear.png","lemon.png","cherry.png","apricot.png"]
 
-const columns = [
-    document.getElementById("col0"),
-    document.getElementById("col1"),
-    document.getElementById("col2")
-]
+let col0 = document.getElementById("col0")
+let col1 = document.getElementById("col1")
+let col2 = document.getElementById("col2")
+let columns = [col0, col1, col2]
 
-const spinBtn = document.getElementById("spinBtn")
-const restartBtn = document.getElementById("restartBtn")
-const triesSpan = document.getElementById("tries")
-const resultDiv = document.getElementById("result")
+let spinBtn = document.getElementById("spinBtn")
+let restartBtn = document.getElementById("restartBtn")
+let triesSpan = document.getElementById("tries")
+let resultDiv = document.getElementById("result")
 
 let tries = 0
-let finished = false
+let gameOver = false
 
 function clearWin() {
-    const cells = document.querySelectorAll(".cell")
+    let cells = document.querySelectorAll(".cell")
     for (let i = 0; i < cells.length; i++) {
         cells[i].classList.remove("win-row")
     }
 }
 
-function spin() {
-    if (finished) return
+spinBtn.onclick = function () {
+    if (gameOver) return
+
     clearWin()
+
     let names = [
         ["","",""],
         ["","",""],
         ["","",""]
     ]
+
     for (let col = 0; col < 3; col++) {
         let used = []
         let cells = columns[col].querySelectorAll(".cell")
@@ -184,7 +185,8 @@ function spin() {
             names[row][col] = fruits[index]
         }
     }
-    tries++
+
+    tries = tries + 1
     triesSpan.textContent = tries
 
     let win = false
@@ -200,33 +202,25 @@ function spin() {
 
     if (win) {
         resultDiv.textContent = "Вітаємо, " + playerName + "! Ви виграли!"
-        finishGame()
+        gameOver = true
+        spinBtn.disabled = true
     } else if (tries >= 3) {
         resultDiv.textContent = "На жаль, " + playerName + ", ви програли."
-        finishGame()
+        gameOver = true
+        spinBtn.disabled = true
     } else {
         resultDiv.textContent = "Спробуйте ще. Залишилось: " + (3 - tries)
     }
 }
 
-function finishGame() {
-    finished = true
-    spinBtn.disabled = true
-    restartBtn.style.display = "block"
-}
-
-function restart() {
-    finished = false
+restartBtn.onclick = function () {
+    gameOver = false
     tries = 0
     triesSpan.textContent = "0"
     resultDiv.textContent = ""
     clearWin()
     spinBtn.disabled = false
-    restartBtn.style.display = "none"
 }
-
-spinBtn.addEventListener("click", spin)
-restartBtn.addEventListener("click", restart)
 </script>
 </body>
 </html>
